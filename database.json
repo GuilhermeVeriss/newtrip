@@ -1,4 +1,68 @@
 {
-    "quartos": [],
-    "reservas": []
+    "reservas": [
+        {
+            "id": 1,
+            "destino": "Rio de Janeiro, RJ",
+            "hotel": "Hotel Copacabana Palace",
+            "tipo_quarto": "Standard",
+            "data_entrada": "2025-06-20",
+            "data_saida": "2025-06-25",
+            "preco_total": 1250.0,
+            "status_pagamento": "pendente",
+            "nome_cliente": "João Silva",
+            "cpf_cliente": "12345678901",
+            "telefone": "(11) 99999-9999",
+            "email": "joao.silva@email.com",
+            "status_reserva": "confirmada",
+            "data_criacao": "2025-06-17"
+        },
+        {
+            "id": 2,
+            "destino": "São Paulo, SP",
+            "hotel": "Hotel Unique",
+            "tipo_quarto": "Deluxe",
+            "data_entrada": "2025-07-01",
+            "data_saida": "2025-07-05",
+            "preco_total": 2000.0,
+            "status_pagamento": "pago",
+            "nome_cliente": "Maria Santos",
+            "cpf_cliente": "98765432109",
+            "telefone": "(11) 88888-8888",
+            "email": "maria.santos@email.com",
+            "status_reserva": "confirmada",
+            "data_criacao": "2025-06-15"
+        },
+        {
+            "id": 3,
+            "destino": "Salvador, BA",
+            "hotel": "Hotel Fasano Salvador",
+            "tipo_quarto": "Suite",
+            "data_entrada": "2025-08-10",
+            "data_saida": "2025-08-15",
+            "preco_total": 3500.0,
+            "status_pagamento": "pago",
+            "nome_cliente": "Carlos Oliveira",
+            "cpf_cliente": "45678912345",
+            "telefone": "(71) 77777-7777",
+            "email": "carlos.oliveira@email.com",
+            "status_reserva": "confirmada",
+            "data_criacao": "2025-06-10"
+        },
+        {
+            "id": 4,
+            "destino": "Gramado, RS",
+            "hotel": "Hotel Casa da Montanha",
+            "tipo_quarto": "Standard",
+            "data_entrada": "2025-09-05",
+            "data_saida": "2025-09-08",
+            "preco_total": 900.0,
+            "status_pagamento": "pendente",
+            "nome_cliente": "Ana Costa",
+            "cpf_cliente": "32165498712",
+            "telefone": "(54) 66666-6666",
+            "email": "ana.costa@email.com",
+            "status_reserva": "pendente",
+            "data_criacao": "2025-06-16"
+        }
+    ]
 }

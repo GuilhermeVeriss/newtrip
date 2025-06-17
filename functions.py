@@ -2,114 +2,22 @@ import database
 from datetime import datetime
 
 
-## FUNÇÕES PARA MANIPULAÇÃO DE QUARTOS
-
-# TODO: TASK 5 - IMPLEMENTAR BUSCAR QUARTO
-def buscar_quarto(value, lista, by='id'):
-    """
-    TASK 5 - BUSCAR QUARTO (PRIORIDADE: MÉDIA)
-    
-    Wrapper da função database.buscar() específica para quartos.
-    
-    PARÂMETROS:
-    - value: valor a ser buscado
-    - lista: lista de quartos
-    - by: campo para busca ('id', 'numero', 'tipo', etc.)
-    
-    RETORNO:
-    - Dicionário do quarto encontrado ou None
-    
-    IMPLEMENTAÇÃO SUGERIDA:
-    return database.buscar(value, lista, by)
-    """
-    # TODO: Implementar usando database.buscar()
-    pass
-
-
-# TODO: TASK 6 - IMPLEMENTAR CRIAR QUARTO
-def criar_quarto(dicionario, lista):
-    """
-    TASK 6 - CRIAR QUARTO (PRIORIDADE: MÉDIA)
-    
-    Cria um novo quarto com validações específicas.
-    
-    VALIDAÇÕES OBRIGATÓRIAS:
-    - Número do quarto deve ser único
-    - Tipo deve ser válido ('Standard', 'Deluxe', 'Suite')
-    - Capacidade deve ser > 0
-    - Preço deve ser > 0
-    - Status padrão: 'disponivel'
-    
-    CAMPOS OBRIGATÓRIOS:
-    - numero: string
-    - tipo: string
-    - capacidade: int
-    - preco_diaria: float
-    - descricao: string (opcional)
-    
-    EXEMPLO DE USO:
-    novo_quarto = {
-        "numero": "103",
-        "tipo": "Standard",
-        "capacidade": 2,
-        "preco_diaria": 180.00,
-        "descricao": "Quarto standard renovado"
-    }
-    """
-    # TODO: Implementar com validações
-    pass
-
-
-# TODO: TASK 7 - IMPLEMENTAR ATUALIZAR QUARTO
-def atualizar_quarto(dicionario, lista, id):
-    """
-    TASK 7 - ATUALIZAR QUARTO (PRIORIDADE: MÉDIA)
-        
-    VALIDAÇÕES:
-    - Se número for alterado, deve ser único
-    - Tipo deve ser válido se fornecido
-    - Valores numéricos devem ser > 0
-    - Não permitir alterar para status inválido
-    
-    STATUS VÁLIDOS: 'disponivel', 'ocupado'
-    """
-    # TODO: Implementar com validações usando database.atualizar()
-    pass
-
-
-# TODO: TASK 8 - IMPLEMENTAR DELETAR QUARTO
-def deletar_quarto(lista, id):
-    """
-    TASK 8 - DELETAR QUARTO (PRIORIDADE: MÉDIA)
-    
-    Deleta um quarto com verificações de segurança.
-    
-    REGRAS DE NEGÓCIO:
-    - Não permitir deletar quarto com reservas ativas
-    - Verificar se existe no sistema antes de deletar
-    
-    PARÂMETROS:
-    - lista: lista de quartos
-    - id: ID do quarto a ser deletado
-    
-    NOTA: Para verificar reservas ativas, você precisará acessar
-    a lista de reservas do banco de dados.
-    """
-    # TODO: Implementar com verificações de segurança
-    pass
-
-
 ## FUNÇÕES PARA MANIPULAÇÃO DE RESERVAS
 
-# TODO: TASK 9 - IMPLEMENTAR BUSCAR RESERVA
+# TODO: TASK 5 - IMPLEMENTAR BUSCAR RESERVA
 def buscar_reserva(value, lista, by='id'):
     """
-    TASK 9 - BUSCAR RESERVA (PRIORIDADE: MÉDIA)
+    TASK 5 - BUSCAR RESERVA (PRIORIDADE: ALTA)
     
     Wrapper da função database.buscar() específica para reservas.
     
-    CAMPOS COMUNS PARA BUSCA:
-    - id, quarto_id, nome_cliente, cpf_cliente, status_reserva
+    PARÂMETROS:
+    - value: valor a ser buscado
+    - lista: lista de reservas
+    - by: campo para busca ('id', 'nome_cliente', 'cpf_cliente', 'destino', etc.)
+    
+    RETORNO:
+    - Dicionário da reserva encontrada ou None
     
     IMPLEMENTAÇÃO SUGERIDA:
     return database.buscar(value, lista, by)
@@ -118,58 +26,32 @@ def buscar_reserva(value, lista, by='id'):
     pass
 
 
-# TODO: TASK 10 - IMPLEMENTAR VERIFICAR DISPONIBILIDADE
-def verificar_disponibilidade(quarto_id, lista_reservas, data_inicio, data_fim):
+# TODO: TASK 6 - IMPLEMENTAR LISTAR RESERVAS
+def listar_reservas(lista):
     """
-    TASK 10 - VERIFICAR DISPONIBILIDADE (PRIORIDADE: ALTA)
+    TASK 6 - LISTAR RESERVAS (PRIORIDADE: ALTA)
     
-    Verifica se um quarto está disponível em um período específico.
-    
-    REGRAS:
-    - Verificar conflitos de datas com reservas existentes
-    - Considerar apenas reservas confirmadas
-    - Data de entrada < Data de saída
-    - Formato de data: 'YYYY-MM-DD'
-    
-    LÓGICA DE CONFLITO:
-    Há conflito se:
-    - Nova entrada < reserva_saida E nova_saida > reserva_entrada
-    
-    PARÂMETROS:
-    - quarto_id: ID do quarto a verificar
-    - lista_reservas: lista de todas as reservas
-    - data_inicio: data de entrada (string 'YYYY-MM-DD')
-    - data_fim: data de saída (string 'YYYY-MM-DD')
-    
-    RETORNO:
-    - True se disponível, False se não disponível
-    
-    EXEMPLO DE USO:
-    disponivel = verificar_disponibilidade(1, reservas, '2025-06-30', '2025-07-05')
-    
-    """
-    # TODO: Implementar lógica de verificação de disponibilidade
-    pass
-
-
-# TODO: TASK 11 - IMPLEMENTAR MOSTRAR RESERVAS
-def mostrar_reservas(lista):
-    """
-    TASK 11 - MOSTRAR RESERVAS (PRIORIDADE: BAIXA)
-    
-    Exibe todas as reservas de forma formatada.
+    Exibe todas as reservas de forma formatada e organizada.
     
     FORMATO SUGERIDO:
     ==========================================
     RESERVA #1
     ==========================================
     Cliente: João Silva (CPF: 123.456.789-01)
-    Quarto: 101 (ID: 1)
-    Período: 20/06/2025 a 25/06/2025
-    Valor Total: R$ 750,00
-    Status Pagamento: Pendente
-    Status Reserva: Confirmada
+    Email: joao.silva@email.com
     Telefone: (11) 99999-9999
+    
+    Destino: Rio de Janeiro, RJ
+    Hotel: Hotel Copacabana Palace
+    Tipo de Quarto: Standard
+    
+    Check-in: 20/06/2025
+    Check-out: 25/06/2025
+    Valor Total: R$ 1.250,00
+    
+    Status da Reserva: Confirmada
+    Status do Pagamento: Pendente
+    Data de Criação: 17/06/2025
     ==========================================
     
     TRATAMENTOS:
@@ -177,7 +59,7 @@ def mostrar_reservas(lista):
     - Formatar CPF: XXX.XXX.XXX-XX
     - Formatar datas: DD/MM/AAAA
     - Formatar valores: R$ X.XXX,XX
-    
+    - Capitalizar status
     """
     if not lista:
         print("Nenhuma reserva encontrada.")
@@ -187,112 +69,131 @@ def mostrar_reservas(lista):
     pass
 
 
-# TODO: TASK 12 - IMPLEMENTAR CRIAR RESERVA
+# TODO: TASK 7 - IMPLEMENTAR CRIAR RESERVA
 def criar_reserva(dicionario, lista):
     """
-    TASK 12 - CRIAR RESERVA (PRIORIDADE: ALTA)
+    TASK 7 - CRIAR RESERVA (PRIORIDADE: ALTA)
     
     Cria uma nova reserva com validações completas.
     
     VALIDAÇÕES OBRIGATÓRIAS:
-    - Quarto deve existir
-    - Quarto deve estar disponível no período
     - Data de entrada >= data atual
     - Data de saída > data de entrada
     - CPF deve ter 11 dígitos
     - Nome não pode estar vazio
-    - Calcular preço total automaticamente
+    - Email deve ter formato válido (@)
+    - Destino e hotel não podem estar vazios
+    - Preço deve ser > 0
     
     CAMPOS OBRIGATÓRIOS:
-    - quarto_id: int
+    - destino: string
+    - hotel: string
+    - tipo_quarto: string ('Standard', 'Deluxe', 'Suite')
     - data_entrada: string 'YYYY-MM-DD'
     - data_saida: string 'YYYY-MM-DD'
+    - preco_total: float
     - nome_cliente: string
     - cpf_cliente: string (11 dígitos)
-    - telefone: string (opcional)
+    - telefone: string
+    - email: string
     
     CAMPOS AUTOMÁTICOS:
-    - numero_quarto: buscar pelo quarto_id
-    - preco_total: (dias * preco_diaria)
     - status_pagamento: 'pendente'
     - status_reserva: 'confirmada'
+    - data_criacao: data atual ('YYYY-MM-DD')
     
     EXEMPLO DE USO:
     nova_reserva = {
-        "quarto_id": 1,
+        "destino": "Florianópolis, SC",
+        "hotel": "Hotel Majestic Palace",
+        "tipo_quarto": "Deluxe",
         "data_entrada": "2025-07-10",
         "data_saida": "2025-07-15",
+        "preco_total": 1800.00,
         "nome_cliente": "Ana Costa",
         "cpf_cliente": "11122233344",
-        "telefone": "(11) 77777-7777"
+        "telefone": "(48) 77777-7777",
+        "email": "ana.costa@email.com"
     }
     """
-    # TODO: Implementar com todas as validações
+    # TODO: Implementar com todas as validações usando database.criar()
     pass
 
 
-# TODO: TASK 13 - IMPLEMENTAR ATUALIZAR RESERVA
+# TODO: TASK 8 - IMPLEMENTAR ATUALIZAR RESERVA
 def atualizar_reserva(dicionario, lista, id):
     """
-    TASK 13 - ATUALIZAR RESERVA (PRIORIDADE: MÉDIA)
+    TASK 8 - ATUALIZAR RESERVA (PRIORIDADE: ALTA)
     
     Atualiza uma reserva existente com validações.
     
     CAMPOS ATUALIZÁVEIS:
-    - data_entrada, data_saida (verificar disponibilidade)
-    - nome_cliente, telefone
+    - destino, hotel, tipo_quarto
+    - data_entrada, data_saida (validar datas)
+    - preco_total (deve ser > 0)
+    - nome_cliente, telefone, email
     - status_pagamento ('pendente', 'pago', 'cancelado')
     - status_reserva ('confirmada', 'cancelada', 'finalizada')
     
     VALIDAÇÕES:
-    - Se alterar datas, verificar disponibilidade
+    - Se alterar datas, validar que entrada >= hoje e saida > entrada
+    - Email deve ter @ se fornecido
+    - Preço deve ser > 0 se fornecido
     - Não permitir alterar reserva finalizada
-    - Recalcular preço se alterar datas
+    - CPF não pode ser alterado (regra de negócio)
     """
-    # TODO: Implementar com validações
+    # TODO: Implementar com validações usando database.atualizar()
     pass
 
 
-# TODO: TASK 14 - IMPLEMENTAR DELETAR/CANCELAR RESERVA
+# TODO: TASK 9 - IMPLEMENTAR DELETAR RESERVA
 def deletar_reserva(lista, id):
     """
-    TASK 14 - DELETAR/CANCELAR RESERVA (PRIORIDADE: MÉDIA)
+    TASK 9 - DELETAR RESERVA (PRIORIDADE: ALTA)
     
-    Cancela uma reserva (ao invés de deletar fisicamente).
+    Deleta uma reserva com verificações de segurança.
     
     REGRAS DE NEGÓCIO:
-    - Reservas confirmadas: alterar status para 'cancelada'
-    - Reservas já finalizadas: não permitir cancelamento
-    - Manter histórico (não deletar fisicamente)
+    - Verificar se a reserva existe antes de deletar
+    - Reservas com status 'finalizada' não podem ser deletadas
+    - Reservas 'confirmadas' podem ser deletadas (cancelamento)
+    - Perguntar confirmação antes de deletar
     
     IMPLEMENTAÇÃO SUGERIDA:
-    - Usar atualizar_reserva() para alterar status
-    - Só deletar fisicamente se explicitamente solicitado
+    - Primeiro buscar a reserva
+    - Verificar se pode ser deletada
+    - Usar database.deletar() para remover
     """
-    # TODO: Implementar cancelamento (não deleção física)
+    # TODO: Implementar com verificações de segurança usando database.deletar()
     pass
 
 
-# TODO: TASK 15 - IMPLEMENTAR FUNÇÕES AUXILIARES
-def calcular_preco_total(data_entrada, data_saida, preco_diaria):
+# TODO: TASK 10 - IMPLEMENTAR BUSCAR POR FILTROS
+def buscar_por_filtros(lista, **filtros):
     """
-    TASK 15 - CALCULAR PREÇO TOTAL (PRIORIDADE: BAIXA)
+    TASK 10 - BUSCAR POR FILTROS (PRIORIDADE: MÉDIA)
     
-    Calcula o preço total da reserva baseado no período e preço da diária.
+    Busca reservas aplicando múltiplos filtros simultaneamente.
     
-    FÓRMULA:
-    dias = (data_saida - data_entrada).days
-    preco_total = dias * preco_diaria
+    FILTROS DISPONÍVEIS:
+    - destino: string (busca parcial, case-insensitive)
+    - status_reserva: string exata
+    - status_pagamento: string exata
+    - data_entrada_inicio: reservas a partir desta data
+    - data_entrada_fim: reservas até esta data
+    - nome_cliente: string (busca parcial, case-insensitive)
     
     PARÂMETROS:
-    - data_entrada: string 'YYYY-MM-DD'
-    - data_saida: string 'YYYY-MM-DD'
-    - preco_diaria: float
+    - lista: lista de reservas
+    - **filtros: filtros a serem aplicados
     
     RETORNO:
-    - float: preço total calculado
+    - Lista de reservas que atendem a todos os filtros
     
-    DICA: Use datetime.strptime() para converter strings em dates
+    EXEMPLO DE USO:
+    reservas_rio = buscar_por_filtros(lista, destino="Rio", status_pagamento="pago")
+    reservas_pendentes = buscar_por_filtros(lista, status_reserva="confirmada", status_pagamento="pendente")
     """
-    # TODO: Implementar cálculo de preço
+    # TODO: Implementar busca com múltiplos filtros
     pass
+
