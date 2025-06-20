@@ -195,6 +195,83 @@ def atualizar_reserva(dicionario, lista, id):
     - CPF não pode ser alterado (regra de negócio)
     """
     # TODO: Implementar com validações usando database.atualizar()
+    def atualizar_reserva(dados_novos, lista, id):
+    """
+    Atualiza uma reserva existente com validações.
+    """
+    # Buscar a reserva pelo ID
+    # Buscar a reserva pelo ID
+    reserva = next((r for r in lista if r.get("id") == id), None)
+    if not reserva:
+        print(f"Reserva com ID {id} não encontrada.")
+        return None
+
+    # Não permitir alteração de reservas finalizadas
+    if reserva.get("status_reserva") == "finalizada":
+        print("Reservas finalizadas não podem ser alteradas.")
+        return None
+
+    # Prevenir alteração de campos proibidos
+    if "cpf" in dicionario:
+        print("O campo 'cpf' não pode ser alterado.")
+        dicionario.pop("cpf")
+
+    if "id" in dicionario:
+        print("O campo 'id' não pode ser alterado.")
+        dicionario.pop("id")
+
+    # Validações
+    hoje = datetime.today().date()
+
+    if "data_entrada" in dicionario:
+        try:
+            entrada = datetime.strptime(dicionario["data_entrada"], "%Y-%m-%d").date()
+            if entrada < hoje:
+                print("A data de entrada deve ser hoje ou no futuro.")
+                return None
+        except ValueError:
+            print("Formato inválido para data de entrada. Use 'YYYY-MM-DD'.")
+            return None
+
+    if "data_saida" in dicionario:
+        try:
+            saida = datetime.strptime(dicionario["data_saida"], "%Y-%m-%d").date()
+            entrada = datetime.strptime(
+                dicionario.get("data_entrada", reserva["data_entrada"]), "%Y-%m-%d"
+            ).date()
+            if saida <= entrada:
+                print("A data de saída deve ser posterior à data de entrada.")
+                return None
+        except ValueError:
+            print("Formato inválido para data de saída. Use 'YYYY-MM-DD'.")
+            return None
+
+    if "email" in dicionario and "@" not in dicionario["email"]:
+        print("E-mail inválido. Deve conter '@'.")
+        return None
+
+    if "preco_total" in dicionario:
+        try:
+            preco = float(dicionario["preco_total"])
+            if preco <= 0:
+                print("Preço total deve ser maior que zero.")
+                return None
+        except ValueError:
+            print("Preço total inválido. Deve ser um número.")
+            return None
+
+    # Validação dos status
+    if "status_pagamento" in dicionario and dicionario["status_pagamento"] not in ["pendente", "pago", "cancelado"]:
+        print("Status de pagamento inválido.")
+        return None
+
+    if "status_reserva" in dicionario and dicionario["status_reserva"] not in ["confirmada", "cancelada", "finalizada"]:
+        print("Status de reserva inválido.")
+        return None
+
+    # Atualização com base na função do banco de dados
+    return database.atualizar(dicionario, lista, id)
+
     pass
 
 
