@@ -196,4 +196,9 @@ def deletar(lista, id):
     reserva_removida = deletar(lista_reservas, 1)
     """
     # TODO: Implementar aqui
+    for i, reserva in enumerate(lista):
+        if reserva.get("id") == id:
+            return lista.pop(i)  
+    print(f"Reserva com ID {id} não encontrada.")
+    return None
     pass
