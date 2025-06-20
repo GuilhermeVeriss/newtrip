@@ -64,7 +64,59 @@ def listar_reservas(lista):
     if not lista:
         print("Nenhuma reserva encontrada.")
         return
-    
+    for i, reserva in enumerate(lista, start=1):
+        print("=" * 42)
+        print(f"RESERVA #{i}")
+        print("=" * 42)
+
+        # Cliente
+        nome = reserva.get("cliente", {}).get("nome", "N/A")
+        cpf = reserva.get("cliente", {}).get("cpf", "")
+        cpf_formatado = f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}" if len(cpf) == 11 else cpf
+        email = reserva.get("cliente", {}).get("email", "N/A")
+        telefone = reserva.get("cliente", {}).get("telefone", "N/A")
+        
+        # Destino
+        destino = reserva.get("destino", "N/A")
+        hotel = reserva.get("hotel", "N/A")
+        tipo_quarto = reserva.get("quarto", "N/A")
+
+        # Datas
+        checkin = reserva.get("checkin", "N/A")
+        checkout = reserva.get("checkout", "N/A")
+        criacao = reserva.get("data_criacao", "N/A")
+        # Assume strings no formato AAAA-MM-DD, transforma em DD/MM/AAAA
+        def formatar_data(data):
+            return f"{data[8:10]}/{data[5:7]}/{data[:4]}" if len(data) == 10 else data
+        checkin = formatar_data(checkin)
+        checkout = formatar_data(checkout)
+        criacao = formatar_data(criacao)
+
+        # Valor
+        valor = reserva.get("valor", 0)
+        valor_formatado = f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+        # Status
+        status_reserva = reserva.get("status_reserva", "indefinido").capitalize()
+        status_pagamento = reserva.get("status_pagamento", "indefinido").capitalize()
+
+        # Impressão formatada
+        print(f"Cliente: {nome} (CPF: {cpf_formatado})")
+        print(f"Email: {email}")
+        print(f"Telefone: {telefone}\n")
+
+        print(f"Destino: {destino}")
+        print(f"Hotel: {hotel}")
+        print(f"Tipo de Quarto: {tipo_quarto}\n")
+
+        print(f"Check-in: {checkin}")
+        print(f"Check-out: {checkout}")
+        print(f"Valor Total: {valor_formatado}\n")
+
+        print(f"Status da Reserva: {status_reserva}")
+        print(f"Status do Pagamento: {status_pagamento}")
+        print(f"Data de Criação: {criacao}")
+        print("=" * 42)
     # TODO: Implementar formatação e exibição das reservas
     pass
 
