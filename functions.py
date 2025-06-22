@@ -195,7 +195,6 @@ def atualizar_reserva(dicionario, lista, id):
     - CPF não pode ser alterado (regra de negócio)
     """
     # TODO: Implementar com validações usando database.atualizar()
-    def atualizar_reserva(dados_novos, lista, id):
     """
     Atualiza uma reserva existente com validações.
     """
