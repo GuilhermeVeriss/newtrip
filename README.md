@@ -155,15 +155,15 @@ functions.listar_reservas(db.data['reservas'])
 
 ### Database.py
 - [ ] TASK 1: buscar() - Busca item por chave/valor
-- [ ] TASK 2: criar() - Cria novo item com ID automático
-- [ ] TASK 3: atualizar() - Atualiza item existente
+- [✅] TASK 2: criar() - Cria novo item com ID automático
+- [✅] TASK 3: atualizar() - Atualiza item existente
 - [ ] TASK 4: deletar() - Remove item da lista
 
 ### Functions.py  
 - [ ] TASK 5: buscar_reserva() - Wrapper de buscar()
 - [ ] TASK 6: listar_reservas() - Formata e exibe reservas
-- [ ] TASK 7: criar_reserva() - Cria com validações
-- [ ] TASK 8: atualizar_reserva() - Atualiza com validações
+- [✅] TASK 7: criar_reserva() - Cria com validações
+- [✅] TASK 8: atualizar_reserva() - Atualiza com validações
 - [ ] TASK 9: deletar_reserva() - Deleta com verificações
 - [ ] TASK 10: buscar_por_filtros() - Busca com múltiplos filtros
 - [ ] TASK 11-15: Funções auxiliares (CPF, email, formatação)
