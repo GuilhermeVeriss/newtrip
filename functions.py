@@ -1,6 +1,6 @@
 import database
 from datetime import datetime
-
+import re
 
 ## FUNÇÕES PARA MANIPULAÇÃO DE RESERVAS
 
@@ -122,8 +122,9 @@ def listar_reservas(lista):
 
 
 # TODO: TASK 7 - IMPLEMENTAR CRIAR RESERVA
-def criar_reserva(dicionario, lista):
+def criar_reserva(nova_reserva, lista_reservas):
     """
+    Diego
     TASK 7 - CRIAR RESERVA (PRIORIDADE: ALTA)
     
     Cria uma nova reserva com validações completas.
@@ -169,7 +170,64 @@ def criar_reserva(dicionario, lista):
     }
     """
     # TODO: Implementar com todas as validações usando database.criar()
-    pass
+    
+    # Validação de campos essenciais não vazios
+    campos_obrigatorios = ["destino", "hotel", "tipo_quarto", "data_entrada", "data_saida", 
+                             "preco_total", "nome_cliente", "cpf_cliente", "email"]
+    for campo in campos_obrigatorios:
+        if campo not in nova_reserva or not nova_reserva[campo]:
+            print(f"Erro de Validação: O campo '{campo}' é obrigatório e não pode estar vazio.")
+            return None
+        
+    # Validação do tipo de quarto
+    tipos_quarto_validos = ['Standard', 'Deluxe', 'Suite']
+    if nova_reserva['tipo_quarto'] not in tipos_quarto_validos:
+        print(f"Erro de Validação: Tipo de quarto '{nova_reserva['tipo_quarto']}' é inválido. Válidos: {tipos_quarto_validos}")
+        return None
+    
+        # Validação das datas
+    try:
+        # Pega a data de hoje, sem as horas, para uma comparação justa
+        data_atual = datetime.now().date()
+        data_entrada = datetime.strptime(nova_reserva['data_entrada'], '%Y-%m-%d').date()
+        data_saida = datetime.strptime(nova_reserva['data_saida'], '%Y-%m-%d').date()
+
+        if data_entrada < data_atual:
+            print(f"Erro de Validação: A data de entrada ({data_entrada.strftime('%d/%m/%Y')}) não pode ser anterior à data atual ({data_atual.strftime('%d/%m/%Y')}).")
+            return None
+        if data_saida <= data_entrada:
+            print(f"Erro de Validação: A data de saída ({data_saida.strftime('%d/%m/%Y')}) deve ser posterior à data de entrada ({data_entrada.strftime('%d/%m/%Y')}).")
+            return None
+    except ValueError:
+        print("Erro de Validação: Formato de data inválido. Use 'YYYY-MM-DD'.")
+        return None
+    
+    # Validação do CPF (deve ter 11 caracteres e ser composto apenas de dígitos)
+    cpf = nova_reserva['cpf_cliente']
+    if not cpf.isdigit() or len(cpf) != 11:
+        print(f"Erro de Validação: CPF '{cpf}' é inválido. Deve conter exatamente 11 dígitos numéricos.")
+        return None
+
+    # Validação do Email (deve conter um '@')
+    email = nova_reserva['email']
+    if not re.search(r"@[^@]+", email):
+        print(f"Erro de Validação: Formato de email '{email}' é inválido.")
+        return None
+
+    # Validação do Preço (deve ser um número maior que zero)
+    try:
+        preco = float(nova_reserva['preco_total'])
+        if preco <= 0:
+            print(f"Erro de Validação: O preço total ({preco}) deve ser maior que zero.")
+            return None
+    except (ValueError, TypeError):
+        print("Erro de Validação: O preço total deve ser um número válido.")
+        return None
+    
+    # Copia o dicionário de entrada para não modificar o original
+    reserva_final = database.criar(nova_reserva, lista_reservas)
+    
+    return reserva_final
 
 
 # TODO: TASK 8 - IMPLEMENTAR ATUALIZAR RESERVA
@@ -271,7 +329,6 @@ def atualizar_reserva(dicionario, lista, id):
     # Atualização com base na função do banco de dados
     return database.atualizar(dicionario, lista, id)
 
-    pass
 
 
 # TODO: TASK 9 - IMPLEMENTAR DELETAR RESERVA

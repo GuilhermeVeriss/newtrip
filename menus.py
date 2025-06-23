@@ -3,7 +3,7 @@ import functions
 
 
 # TODO: TASK 16 - IMPLEMENTAR MENU PRINCIPAL
-def menu_principal():
+def menu_principal(db):
     """
     TASK 16 - MENU PRINCIPAL (PRIORIDADE: ALTA)
     
@@ -29,7 +29,27 @@ def menu_principal():
     print("="*50)
     
     # TODO: Implementar loop do menu principal
-    pass
+    while True:
+        print("\n--- MENU PRINCIPAL ---")
+        print("1. Listar reservas")
+        print("2. Criar nova reserva")
+        print("3. Atualizar reserva")
+        print("0. Sair")
+        print("--------------------")
+        escolha = input("Escolha uma opção: ")
+
+        if escolha == '1':
+            functions.listar_reservas(db.data.get('reservas', []))
+        elif escolha == '2':
+            menu_criar_reserva(db)
+        elif escolha == '0':
+            break
+        elif escolha == '3': 
+            menu_atualizar_reserva(db)
+        else:
+            print("Opção inválida!")
+        
+        input("\nPressione Enter para continuar...")
 
 
 # TODO: TASK 17 - IMPLEMENTAR MENU LISTAR
@@ -121,7 +141,30 @@ def menu_criar_reserva(db):
     print("="*50)
     
     # TODO: Implementar coleta de dados e criação usando functions.criar_reserva()
-    pass
+    dados = {
+        "destino": input("Destino: "),
+        "hotel": input("Hotel: "),
+        "tipo_quarto": input("Tipo de Quarto (Standard, Deluxe, Suite): "),
+        "data_entrada": input("Data de Entrada (AAAA-MM-DD): "),
+        "data_saida": input("Data de Saída (AAAA-MM-DD): "),
+        "nome_cliente": input("Nome do cliente: "),
+        "cpf_cliente": input("CPF do cliente (11 dígitos): "),
+        "telefone": input("Telefone: "),
+        "email": input("Email: ")
+    }
+    try:
+        dados["preco_total"] = float(input("Preço Total: "))
+    except ValueError:
+        print("Erro: Preço inválido.")
+        return
+    
+    reserva_criada = functions.criar_reserva(dados, db.data.get('reservas', []))    
+    
+    if reserva_criada:
+        db.save_data() # Salva o estado atual da lista no arquivo
+        print("\nSUCESSO: Reserva criada e salva no banco de dados.")
+    else:
+        print("\nFALHA: Não foi possível criar a reserva. Verifique os erros.")
 
 
 # TODO: TASK 20 - IMPLEMENTAR MENU ATUALIZAR
@@ -153,7 +196,73 @@ def menu_atualizar_reserva(db):
     print("="*50)
     
     # TODO: Implementar busca e atualização usando functions.atualizar_reserva()
-    pass
+    """Interface para o usuário atualizar uma reserva."""
+    try:
+        id_reserva = int(input("Digite o ID da reserva que deseja atualizar: "))
+    except ValueError:
+        print("Erro: ID inválido.")
+        return
+
+    lista_reservas = db.data.get('reservas', [])
+    
+    # Busca a reserva para mostrar os dados atuais e verificar se existe
+    reserva_existente = next((r for r in lista_reservas if r.get("id") == id_reserva), None)
+    if not reserva_existente:
+        print(f"Erro: Reserva com ID {id_reserva} não encontrada.")
+        return
+        
+    print(f"\nAtualizando Reserva #{id_reserva}. Pressione Enter para manter o valor atual.")
+    print("-" * 50)
+    
+    dados_para_atualizar = {}
+    
+    # --- DADOS DA VIAGEM ---
+    campos_viagem = ['destino', 'hotel', 'tipo_quarto', 'data_entrada', 'data_saida']
+    for campo in campos_viagem:
+        valor_atual = reserva_existente.get(campo, 'N/A')
+        novo_valor = input(f"{campo.replace('_', ' ').capitalize()} ({valor_atual}): ")
+        if novo_valor:
+            dados_para_atualizar[campo] = novo_valor
+            
+    # --- PREÇO TOTAL (com validação) ---
+    preco_atual = reserva_existente.get('preco_total', 0.0)
+    novo_preco_str = input(f"Preço total ({preco_atual}): ")
+    if novo_preco_str:
+        try:
+            dados_para_atualizar['preco_total'] = float(novo_preco_str)
+        except ValueError:
+            print(f"Aviso: Formato de preço inválido. O valor do preço não será alterado.")
+
+    print("-" * 50)
+    # --- DADOS DO CLIENTE ---
+    campos_cliente = ['nome_cliente', 'telefone', 'email']
+    for campo in campos_cliente:
+        valor_atual = reserva_existente.get(campo, 'N/A')
+        novo_valor = input(f"{campo.replace('_', ' ').capitalize()} ({valor_atual}): ")
+        if novo_valor:
+            dados_para_atualizar[campo] = novo_valor
+
+    print("-" * 50)
+    # --- STATUS ---
+    campos_status = ['status_reserva', 'status_pagamento']
+    for campo in campos_status:
+        valor_atual = reserva_existente.get(campo, 'N/A')
+        novo_valor = input(f"{campo.replace('_', ' ').capitalize()} ({valor_atual}): ")
+        if novo_valor:
+            dados_para_atualizar[campo] = novo_valor
+
+    if not dados_para_atualizar:
+        print("\nNenhum dado foi alterado.")
+        return
+
+    # Chama a função de alto nível que faz as validações
+    reserva_atualizada = functions.atualizar_reserva(dados_para_atualizar, lista_reservas, id_reserva)
+    
+    if reserva_atualizada:
+        db.save_data() 
+        print("\nSUCESSO: Reserva atualizada.")
+    else:
+        print("\nFALHA: Não foi possível atualizar a reserva. Verifique os erros de validação.")
 
 
 # TODO: TASK 21 - IMPLEMENTAR MENU DELETAR

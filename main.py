@@ -40,7 +40,7 @@ def main():
     
     # Chamar menu principal
     try:
-        menus.menu_principal()
+        menus.menu_principal(db)
     except KeyboardInterrupt:
         print("\n\nSistema encerrado pelo usuário.")
     except Exception as e:

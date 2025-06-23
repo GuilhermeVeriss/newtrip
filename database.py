@@ -140,8 +140,15 @@ def criar(dicionario, lista):
     reserva_criada = criar(nova_reserva, lista_reservas)
     # Retorna: {"id": 5, "destino": "Recife, PE", "nome_cliente": "Pedro"}
     """
-    # TODO: Implementar aqui
-    pass
+    
+    """Cria uma nova reserva com o dicionário fornecido e adiciona à lista."""
+    # Encontra o maior ID na lista e soma 1. Se a lista estiver vazia, ID é 1.
+    novo_id = max(item.get('id', 0) for item in lista) + 1 if lista else 1
+    novo_item = dicionario.copy()
+    novo_item['id'] = novo_id   
+    lista.append(novo_item) 
+    
+    return novo_item 
 
 
 # TODO: TASK 3 - IMPLEMENTAR FUNÇÃO ATUALIZAR
@@ -170,7 +177,11 @@ def atualizar(dicionario, lista, id):
     reserva_atualizada = atualizar(dados_atualizacao, lista_reservas, 1)
     """
     # TODO: Implementar aqui
-    pass
+    for item in lista:
+        if item.get("id") == id:
+            item.update(dicionario)
+            return item
+    return None
 
 
 # TODO: TASK 4 - IMPLEMENTAR FUNÇÃO DELETAR
@@ -201,4 +212,4 @@ def deletar(lista, id):
             return lista.pop(i)  
     print(f"Reserva com ID {id} não encontrada.")
     return None
-    pass
+    
