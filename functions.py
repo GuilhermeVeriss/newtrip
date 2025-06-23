@@ -1,11 +1,10 @@
-import database
 from datetime import datetime
 import re
 
 ## FUNÇÕES PARA MANIPULAÇÃO DE RESERVAS
 
 # TODO: TASK 5 - IMPLEMENTAR BUSCAR RESERVA
-def buscar_reserva(value, lista, by='id'):
+def buscar_reserva(value, database, by='id'):
     """
     TASK 5 - BUSCAR RESERVA (PRIORIDADE: ALTA)
     
@@ -23,11 +22,17 @@ def buscar_reserva(value, lista, by='id'):
     return database.buscar(value, lista, by)
     """
     # TODO: Implementar usando database.buscar()
-    pass
+
+    lista = database.data.get('reservas', [])
+
+    for reserva in lista:
+        if reserva.get(by) == value:
+            return reserva
+    return None
 
 
 # TODO: TASK 6 - IMPLEMENTAR LISTAR RESERVAS
-def listar_reservas(lista):
+def listar_reservas(database):
     """
     TASK 6 - LISTAR RESERVAS (PRIORIDADE: ALTA)
     
@@ -61,6 +66,8 @@ def listar_reservas(lista):
     - Formatar valores: R$ X.XXX,XX
     - Capitalizar status
     """
+    lista = database.data.get('reservas', [])
+
     if not lista:
         print("Nenhuma reserva encontrada.")
         return
@@ -117,12 +124,10 @@ def listar_reservas(lista):
         print(f"Status do Pagamento: {status_pagamento}")
         print(f"Data de Criação: {criacao}")
         print("=" * 42)
-    # TODO: Implementar formatação e exibição das reservas
-    pass
 
 
 # TODO: TASK 7 - IMPLEMENTAR CRIAR RESERVA
-def criar_reserva(nova_reserva, lista_reservas):
+def criar_reserva(nova_reserva, database):
     """
     Diego
     TASK 7 - CRIAR RESERVA (PRIORIDADE: ALTA)
@@ -169,7 +174,6 @@ def criar_reserva(nova_reserva, lista_reservas):
         "email": "ana.costa@email.com"
     }
     """
-    # TODO: Implementar com todas as validações usando database.criar()
     
     # Validação de campos essenciais não vazios
     campos_obrigatorios = ["destino", "hotel", "tipo_quarto", "data_entrada", "data_saida", 
@@ -225,13 +229,13 @@ def criar_reserva(nova_reserva, lista_reservas):
         return None
     
     # Copia o dicionário de entrada para não modificar o original
-    reserva_final = database.criar(nova_reserva, lista_reservas)
+    reserva_final = database.criar(nova_reserva, 'reservas')
     
     return reserva_final
 
 
 # TODO: TASK 8 - IMPLEMENTAR ATUALIZAR RESERVA
-def atualizar_reserva(dicionario, lista, id):
+def atualizar_reserva(dicionario, id, database):
     """
     TASK 8 - ATUALIZAR RESERVA (PRIORIDADE: ALTA)
     
@@ -258,7 +262,7 @@ def atualizar_reserva(dicionario, lista, id):
     """
     # Buscar a reserva pelo ID
     # Buscar a reserva pelo ID
-    reserva = next((r for r in lista if r.get("id") == id), None)
+    reserva = database.buscar(id, 'reservas', by='id')
     if not reserva:
         print(f"Reserva com ID {id} não encontrada.")
         return None
@@ -327,12 +331,12 @@ def atualizar_reserva(dicionario, lista, id):
         return None
 
     # Atualização com base na função do banco de dados
-    return database.atualizar(dicionario, lista, id)
+    return database.atualizar(dicionario, 'reservas', id)
 
 
 
 # TODO: TASK 9 - IMPLEMENTAR DELETAR RESERVA
-def deletar_reserva(lista, id):
+def deletar_reserva(id, database):
     """
     TASK 9 - DELETAR RESERVA (PRIORIDADE: ALTA)
     
@@ -342,15 +346,25 @@ def deletar_reserva(lista, id):
     - Verificar se a reserva existe antes de deletar
     - Reservas com status 'finalizada' não podem ser deletadas
     - Reservas 'confirmadas' podem ser deletadas (cancelamento)
-    - Perguntar confirmação antes de deletar
     
     IMPLEMENTAÇÃO SUGERIDA:
     - Primeiro buscar a reserva
     - Verificar se pode ser deletada
     - Usar database.deletar() para remover
     """
-    # TODO: Implementar com verificações de segurança usando database.deletar()
-    pass
+    reserva = buscar_reserva(id, database, by='id')
+    if not reserva:
+        print(f"Reserva com ID {id} não encontrada.")
+        return None
+
+    # Verificar se a reserva pode ser deletada
+    if reserva.get("status_reserva") == "finalizada":
+        print("Reservas finalizadas não podem ser deletadas.")
+        return None
+    
+    # Deletar a reserva usando a função do banco de dados
+    return database.deletar('reservas', id)
+
 
 
 # TODO: TASK 10 - IMPLEMENTAR BUSCAR POR FILTROS
