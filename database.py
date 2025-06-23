@@ -92,124 +92,143 @@ class Database:
         self.save_data()
 
 
-# TODO: TASK 1 - IMPLEMENTAR FUNÇÃO BUSCAR
-def buscar(value, lista, by='id'):
-    """
-    TASK 1 - FUNÇÃO BUSCAR (PRIORIDADE: ALTA)
-    
-    Busca uma reserva em uma lista de dicionários pelo valor de uma chave específica.
-    
-    PARÂMETROS:
-    - value: valor a ser buscado
-    - lista: lista de dicionários onde buscar
-    - by: chave do dicionário para fazer a busca (padrão: 'id')
-    
-    RETORNO:
-    - Dicionário encontrado ou None se não encontrar
-    
-    EXEMPLO DE USO:
-    reservas = [{"id": 1, "nome_cliente": "João"}, {"id": 2, "nome_cliente": "Maria"}]
-    resultado = buscar(1, reservas, 'id')  # Retorna {"id": 1, "nome_cliente": "João"}
-    resultado = buscar("João", reservas, 'nome_cliente')  # Retorna {"id": 1, "nome_cliente": "João"}
-    """
-    # TODO: Implementar aqui
-    pass
+    # TODO: TASK 1 - IMPLEMENTAR FUNÇÃO BUSCAR
+    def buscar(self, value, lista_nome, by='id'):
+        """
+        TASK 1 - FUNÇÃO BUSCAR (PRIORIDADE: ALTA)
+        
+        Busca uma reserva em uma lista de dicionários pelo valor de uma chave específica.
+        
+        PARÂMETROS:
+        - value: valor a ser buscado
+        - lista_nome: lista de dicionários onde buscar
+        - by: chave do dicionário para fazer a busca (padrão: 'id')
+        
+        RETORNO:
+        - Dicionário encontrado ou None se não encontrar
+        
+        EXEMPLO DE USO:
+        reservas = [{"id": 1, "nome_cliente": "João"}, {"id": 2, "nome_cliente": "Maria"}]
+        resultado = buscar(1, reservas, 'id')  # Retorna {"id": 1, "nome_cliente": "João"}
+        resultado = buscar("João", reservas, 'nome_cliente')  # Retorna {"id": 1, "nome_cliente": "João"}
+        """
+        lista = self.data.get(lista_nome, [])
+
+        for item in lista:
+            if item.get(by) == value:
+                return item
+        return None
 
 
-# TODO: TASK 2 - IMPLEMENTAR FUNÇÃO CRIAR
-def criar(dicionario, lista):
-    """
-    TASK 2 - FUNÇÃO CRIAR (PRIORIDADE: ALTA)
-    
-    Cria uma nova reserva com o dicionário fornecido e adiciona à lista.
-    
-    REGRAS:
-    - ID: busca o maior ID existente e incrementa em 1
-    - Se a lista estiver vazia, inicia o ID em 1
-    - Adiciona o novo dicionário à lista
-    
-    PARÂMETROS:
-    - dicionario: dicionário com dados da nova reserva (sem ID)
-    - lista: lista onde adicionar a nova reserva
-    
-    RETORNO:
-    - Dicionário criado (incluindo o ID gerado)
-    
-    EXEMPLO DE USO:
-    nova_reserva = {"destino": "Recife, PE", "nome_cliente": "Pedro"}
-    reserva_criada = criar(nova_reserva, lista_reservas)
-    # Retorna: {"id": 5, "destino": "Recife, PE", "nome_cliente": "Pedro"}
-    """
-    
-    """Cria uma nova reserva com o dicionário fornecido e adiciona à lista."""
-    # Encontra o maior ID na lista e soma 1. Se a lista estiver vazia, ID é 1.
-    novo_id = max(item.get('id', 0) for item in lista) + 1 if lista else 1
-    novo_item = dicionario.copy()
-    novo_item['id'] = novo_id   
-    lista.append(novo_item) 
-    
-    return novo_item 
+    # TODO: TASK 2 - IMPLEMENTAR FUNÇÃO CRIAR
+    def criar(self, dicionario, lista_nome):
+        """
+        TASK 2 - FUNÇÃO CRIAR (PRIORIDADE: ALTA)
+        
+        Cria uma nova reserva com o dicionário fornecido e adiciona à lista.
+        
+        REGRAS:
+        - ID: busca o maior ID existente e incrementa em 1
+        - Se a lista estiver vazia, inicia o ID em 1
+        - Adiciona o novo dicionário à lista
+        
+        PARÂMETROS:
+        - dicionario: dicionário com dados da nova reserva (sem ID)
+        - lista_nome: lista onde adicionar a nova reserva
+        
+        RETORNO:
+        - Dicionário criado (incluindo o ID gerado)
+        
+        EXEMPLO DE USO:
+        nova_reserva = {"destino": "Recife, PE", "nome_cliente": "Pedro"}
+        reserva_criada = criar(nova_reserva, lista_reservas)
+        # Retorna: {"id": 5, "destino": "Recife, PE", "nome_cliente": "Pedro"}
+        """
+        
+        """Cria uma nova reserva com o dicionário fornecido e adiciona à lista."""
+        lista = self.data.get(lista_nome, [])
+
+        # Encontra o maior ID na lista e soma 1. Se a lista estiver vazia, ID é 1.
+        novo_id = max(item.get('id', 0) for item in lista) + 1 if lista else 1
+        novo_item = dicionario.copy()
+        novo_item['id'] = novo_id   
+        lista.append(novo_item) 
+        
+        # Atualiza o dicionário de dados com a nova lista
+        self.data[lista_nome] = lista
+        
+        self.save_data() # Salva a lista atualizada no banco de dados
+
+        return novo_item 
 
 
-# TODO: TASK 3 - IMPLEMENTAR FUNÇÃO ATUALIZAR
-def atualizar(dicionario, lista, id):
-    """
-    TASK 3 - FUNÇÃO ATUALIZAR (PRIORIDADE: ALTA)
-    
-    Atualiza uma reserva existente na lista com os valores fornecidos.
-    
-    REGRAS:
-    - Busca a reserva pelo ID fornecido
-    - Atualiza apenas os campos fornecidos no dicionário
-    - Mantém os campos não fornecidos inalterados
-    - Não permite alterar o ID
-    
-    PARÂMETROS:
-    - dicionario: dicionario com campos a serem atualizados
-    - lista: lista onde buscar a reserva
-    - id: ID da reserva a ser atualizada
-    
-    RETORNO:
-    - Dicionário atualizado ou None se ID não for encontrado
-    
-    EXEMPLO DE USO:
-    dados_atualizacao = {"status_pagamento": "pago", "telefone": "(11) 11111-1111"}
-    reserva_atualizada = atualizar(dados_atualizacao, lista_reservas, 1)
-    """
-    # TODO: Implementar aqui
-    for item in lista:
-        if item.get("id") == id:
-            item.update(dicionario)
-            return item
-    return None
+    # TODO: TASK 3 - IMPLEMENTAR FUNÇÃO ATUALIZAR
+    def atualizar(self, dicionario, lista_nome, id):
+        """
+        TASK 3 - FUNÇÃO ATUALIZAR (PRIORIDADE: ALTA)
+        
+        Atualiza uma reserva existente na lista com os valores fornecidos.
+        
+        REGRAS:
+        - Busca a reserva pelo ID fornecido
+        - Atualiza apenas os campos fornecidos no dicionário
+        - Mantém os campos não fornecidos inalterados
+        - Não permite alterar o ID
+        
+        PARÂMETROS:
+        - dicionario: dicionario com campos a serem atualizados
+        - lista_nome: lista onde buscar a reserva
+        - id: ID da reserva a ser atualizada
+        
+        RETORNO:
+        - Dicionário atualizado ou None se ID não for encontrado
+        
+        EXEMPLO DE USO:
+        dados_atualizacao = {"status_pagamento": "pago", "telefone": "(11) 11111-1111"}
+        reserva_atualizada = atualizar(dados_atualizacao, lista_reservas, 1)
+        """
+        lista = self.data.get(lista_nome, [])
+
+        for item in lista:
+            if item.get("id") == id:
+                item.update(dicionario)
+                self.save_data()  # Salva as alterações no banco de dados
+
+                return item
+            
+        return None
 
 
-# TODO: TASK 4 - IMPLEMENTAR FUNÇÃO DELETAR
-def deletar(lista, id):
-    """
-    TASK 4 - FUNÇÃO DELETAR (PRIORIDADE: ALTA)
-    
-    Deleta uma reserva da lista pelo ID fornecido.
-    
-    REGRAS:
-    - Busca a reserva pelo ID fornecido
-    - Remove a reserva da lista
-    - Retorna a reserva removida
-    
-    PARÂMETROS:
-    - lista: lista onde buscar e remover a reserva
-    - id: ID da reserva a ser removida
-    
-    RETORNO:
-    - Dicionário removido ou None se ID não for encontrado
-    
-    EXEMPLO DE USO:
-    reserva_removida = deletar(lista_reservas, 1)
-    """
-    # TODO: Implementar aqui
-    for i, reserva in enumerate(lista):
-        if reserva.get("id") == id:
-            return lista.pop(i)  
-    print(f"Reserva com ID {id} não encontrada.")
-    return None
+    # TODO: TASK 4 - IMPLEMENTAR FUNÇÃO DELETAR
+    def deletar(self, lista_nome, id):
+        """
+        TASK 4 - FUNÇÃO DELETAR (PRIORIDADE: ALTA)
+        
+        Deleta uma reserva da lista pelo ID fornecido.
+        
+        REGRAS:
+        - Busca a reserva pelo ID fornecido
+        - Remove a reserva da lista
+        - Retorna a reserva removida
+        
+        PARÂMETROS:
+        - lista_nome: lista onde buscar e remover a reserva
+        - id: ID da reserva a ser removida
+        
+        RETORNO:
+        - Dicionário removido ou None se ID não for encontrado
+        
+        EXEMPLO DE USO:
+        reserva_removida = deletar(lista_reservas, 1)
+        """
+        # TODO: Implementar aqui
+        lista = self.data.get(lista_nome, [])
+
+        for i, reserva in enumerate(lista):
+            if reserva.get("id") == id:
+                removido = lista.pop(i)
+                self.save_data()  # Salva as alterações no banco de dados
+                return removido
+        print(f"Reserva com ID {id} não encontrada.")
+        return None
     
