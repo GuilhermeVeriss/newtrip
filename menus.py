@@ -15,7 +15,8 @@ def menu_principal(db):
         print("3. Criar nova reserva")
         print("4. Atualizar reserva")
         print("5. Deletar reserva")
-        print("6. Buscar por filtros")
+        print("6. Marcar reserva como paga")
+        print("7. Buscar por filtros")
         print("0. Sair")
         print("--------------------")
         escolha = input("Escolha uma opção: ")
@@ -31,6 +32,8 @@ def menu_principal(db):
         elif escolha == '5':
             menu_deletar_reserva(db)
         elif escolha == '6':
+            menu_marcar_como_paga(db)
+        elif escolha == '7':
             menu_buscar_por_filtros(db)
         elif escolha == '0':
             print("\nSaindo do sistema...")
@@ -413,6 +416,68 @@ def menu_deletar_reserva(db):
             else:
                 print("\nOperação cancelada.")
                 
+        except ValueError:
+            print("\n✗ Erro: ID deve ser um número válido!")
+        except Exception as e:
+            print(f"\n✗ Erro inesperado: {e}")
+        
+        input("\nPressione Enter para continuar...")
+
+
+def menu_marcar_como_paga(db):
+    """Menu para marcar uma reserva como paga."""
+    while True:
+        print("\n" + "="*50)
+        print("     MARCAR RESERVA COMO PAGA")
+        print("="*50)
+        
+        print("\n--- OPÇÕES ---")
+        print("1. Marcar uma reserva como paga")
+        print("0. Voltar ao menu principal")
+        print("-" * 20)
+        
+        opcao = input("Escolha uma opção: ").strip()
+        
+        if opcao == '0':
+            break
+        elif opcao != '1':
+            print("Opção inválida! Tente novamente.")
+            continue
+        
+        try:
+            id_input = input("Digite o ID da reserva a ser marcada como paga (ou '0' para voltar): ").strip()
+            if id_input == '0':
+                break
+            if not id_input:
+                print("ID não pode ser vazio!")
+                continue
+                
+            id_reserva = int(id_input)
+            
+            reserva = functions.buscar_reserva(id_reserva, db, by='id')
+            
+            if not reserva:
+                print(f"Reserva com ID {id_reserva} não encontrada!")
+                input("\nPressione Enter para continuar...")
+                continue
+            
+            if reserva.get('status_pagamento') == 'pago':
+                print("Esta reserva já está marcada como paga.")
+                input("\nPressione Enter para continuar...")
+                continue
+            
+            confirmacao = input(f"Tem certeza que deseja marcar a reserva {id_reserva} como paga? (s/N): ").strip().lower()
+            
+            if confirmacao == 's' or confirmacao == 'sim':
+                reserva_atualizada = functions.atualizar_reserva({"status_pagamento": "pago"}, id_reserva, db)
+                
+                if reserva_atualizada:
+                    print(f"\n✓ Reserva {id_reserva} marcada como paga com sucesso!")
+                else:
+                    print(f"\n✗ Falha ao atualizar reserva {id_reserva}.")
+            else:
+                print("\nOperação cancelada.")
+        
         except ValueError:
             print("\n✗ Erro: ID deve ser um número válido!")
         except Exception as e:

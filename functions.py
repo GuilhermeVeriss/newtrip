@@ -231,3 +231,35 @@ def buscar_por_filtros(lista, **filtros):
     # TODO: Implementar busca com múltiplos filtros
     pass
 
+
+def marcar_como_paga(id, database):
+    """Marca uma reserva como paga usando a função atualizar_reserva."""
+    
+    # Buscar a reserva pelo ID
+    reserva = buscar_reserva(id, database, by='id')
+    if not reserva:
+        print(f"Reserva com ID {id} não encontrada.")
+        return None
+    
+    # Verificar se a reserva já está paga
+    if reserva.get("status_pagamento") == "pago":
+        print(f"A reserva {id} já está marcada como paga.")
+        return reserva
+    
+    # Verificar se a reserva pode ser paga (não pode estar cancelada)
+    if reserva.get("status_reserva") == "cancelada":
+        print("Não é possível marcar como paga uma reserva cancelada.")
+        return None
+    
+    # Atualizar apenas o status de pagamento para "pago"
+    dados_atualizacao = {"status_pagamento": "pago"}
+    
+    reserva_atualizada = atualizar_reserva(dados_atualizacao, id, database)
+    
+    if reserva_atualizada:
+        print(f"✓ Reserva {id} marcada como paga com sucesso!")
+        return reserva_atualizada
+    else:
+        print(f"✗ Falha ao marcar reserva {id} como paga.")
+        return None
+

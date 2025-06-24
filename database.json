@@ -56,12 +56,12 @@
             "data_entrada": "2025-09-05",
             "data_saida": "2025-09-08",
             "preco_total": 900.0,
-            "status_pagamento": "pendente",
+            "status_pagamento": "pago",
             "nome_cliente": "Ana Costa",
             "cpf_cliente": "32165498712",
             "telefone": "(54) 66666-6666",
             "email": "ana.costa@email.com",
-            "status_reserva": "pendente",
+            "status_reserva": "finalizada",
             "data_criacao": "2025-06-16"
         }
     ]
