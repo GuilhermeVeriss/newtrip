@@ -3,26 +3,8 @@ import re
 
 ## FUNÇÕES PARA MANIPULAÇÃO DE RESERVAS
 
-# TODO: TASK 5 - IMPLEMENTAR BUSCAR RESERVA
 def buscar_reserva(value, database, by='id'):
-    """
-    TASK 5 - BUSCAR RESERVA (PRIORIDADE: ALTA)
-    
-    Wrapper da função database.buscar() específica para reservas.
-    
-    PARÂMETROS:
-    - value: valor a ser buscado
-    - lista: lista de reservas
-    - by: campo para busca ('id', 'nome_cliente', 'cpf_cliente', 'destino', etc.)
-    
-    RETORNO:
-    - Dicionário da reserva encontrada ou None
-    
-    IMPLEMENTAÇÃO SUGERIDA:
-    return database.buscar(value, lista, by)
-    """
-    # TODO: Implementar usando database.buscar()
-
+    """Busca uma reserva específica por ID, nome, CPF ou outro campo."""
     lista = database.data.get('reservas', [])
 
     for reserva in lista:
@@ -31,41 +13,8 @@ def buscar_reserva(value, database, by='id'):
     return None
 
 
-# TODO: TASK 6 - IMPLEMENTAR LISTAR RESERVAS
 def listar_reservas(database):
-    """
-    TASK 6 - LISTAR RESERVAS (PRIORIDADE: ALTA)
-    
-    Exibe todas as reservas de forma formatada e organizada.
-    
-    FORMATO SUGERIDO:
-    ==========================================
-    RESERVA #1
-    ==========================================
-    Cliente: João Silva (CPF: 123.456.789-01)
-    Email: joao.silva@email.com
-    Telefone: (11) 99999-9999
-    
-    Destino: Rio de Janeiro, RJ
-    Hotel: Hotel Copacabana Palace
-    Tipo de Quarto: Standard
-    
-    Check-in: 20/06/2025
-    Check-out: 25/06/2025
-    Valor Total: R$ 1.250,00
-    
-    Status da Reserva: Confirmada
-    Status do Pagamento: Pendente
-    Data de Criação: 17/06/2025
-    ==========================================
-    
-    TRATAMENTOS:
-    - Lista vazia: "Nenhuma reserva encontrada."
-    - Formatar CPF: XXX.XXX.XXX-XX
-    - Formatar datas: DD/MM/AAAA
-    - Formatar valores: R$ X.XXX,XX
-    - Capitalizar status
-    """
+    """Exibe todas as reservas de forma formatada e organizada."""
     lista = database.data.get('reservas', [])
 
     if not lista:
@@ -77,22 +26,22 @@ def listar_reservas(database):
         print("=" * 42)
 
         # Cliente
-        nome = reserva.get("cliente", {}).get("nome", "N/A")
-        cpf = reserva.get("cliente", {}).get("cpf", "")
+        nome = reserva.get("nome_cliente", "N/A")
+        cpf = reserva.get("cpf_cliente", "")
         cpf_formatado = f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}" if len(cpf) == 11 else cpf
-        email = reserva.get("cliente", {}).get("email", "N/A")
-        telefone = reserva.get("cliente", {}).get("telefone", "N/A")
+        email = reserva.get("email", "N/A")
+        telefone = reserva.get("telefone", "N/A")
         
         # Destino
         destino = reserva.get("destino", "N/A")
         hotel = reserva.get("hotel", "N/A")
-        tipo_quarto = reserva.get("quarto", "N/A")
+        tipo_quarto = reserva.get("tipo_quarto", "N/A")
 
         # Datas
-        checkin = reserva.get("checkin", "N/A")
-        checkout = reserva.get("checkout", "N/A")
+        checkin = reserva.get("data_entrada", "N/A")
+        checkout = reserva.get("data_saida", "N/A")
         criacao = reserva.get("data_criacao", "N/A")
-        # Assume strings no formato AAAA-MM-DD, transforma em DD/MM/AAAA
+        
         def formatar_data(data):
             return f"{data[8:10]}/{data[5:7]}/{data[:4]}" if len(data) == 10 else data
         checkin = formatar_data(checkin)
@@ -100,7 +49,7 @@ def listar_reservas(database):
         criacao = formatar_data(criacao)
 
         # Valor
-        valor = reserva.get("valor", 0)
+        valor = reserva.get("preco_total", 0)
         valor_formatado = f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
         # Status
@@ -126,54 +75,8 @@ def listar_reservas(database):
         print("=" * 42)
 
 
-# TODO: TASK 7 - IMPLEMENTAR CRIAR RESERVA
 def criar_reserva(nova_reserva, database):
-    """
-    Diego
-    TASK 7 - CRIAR RESERVA (PRIORIDADE: ALTA)
-    
-    Cria uma nova reserva com validações completas.
-    
-    VALIDAÇÕES OBRIGATÓRIAS:
-    - Data de entrada >= data atual
-    - Data de saída > data de entrada
-    - CPF deve ter 11 dígitos
-    - Nome não pode estar vazio
-    - Email deve ter formato válido (@)
-    - Destino e hotel não podem estar vazios
-    - Preço deve ser > 0
-    
-    CAMPOS OBRIGATÓRIOS:
-    - destino: string
-    - hotel: string
-    - tipo_quarto: string ('Standard', 'Deluxe', 'Suite')
-    - data_entrada: string 'YYYY-MM-DD'
-    - data_saida: string 'YYYY-MM-DD'
-    - preco_total: float
-    - nome_cliente: string
-    - cpf_cliente: string (11 dígitos)
-    - telefone: string
-    - email: string
-    
-    CAMPOS AUTOMÁTICOS:
-    - status_pagamento: 'pendente'
-    - status_reserva: 'confirmada'
-    - data_criacao: data atual ('YYYY-MM-DD')
-    
-    EXEMPLO DE USO:
-    nova_reserva = {
-        "destino": "Florianópolis, SC",
-        "hotel": "Hotel Majestic Palace",
-        "tipo_quarto": "Deluxe",
-        "data_entrada": "2025-07-10",
-        "data_saida": "2025-07-15",
-        "preco_total": 1800.00,
-        "nome_cliente": "Ana Costa",
-        "cpf_cliente": "11122233344",
-        "telefone": "(48) 77777-7777",
-        "email": "ana.costa@email.com"
-    }
-    """
+    """Cria uma nova reserva com validações completas."""
     
     # Validação de campos essenciais não vazios
     campos_obrigatorios = ["destino", "hotel", "tipo_quarto", "data_entrada", "data_saida", 
@@ -189,9 +92,8 @@ def criar_reserva(nova_reserva, database):
         print(f"Erro de Validação: Tipo de quarto '{nova_reserva['tipo_quarto']}' é inválido. Válidos: {tipos_quarto_validos}")
         return None
     
-        # Validação das datas
+    # Validação das datas
     try:
-        # Pega a data de hoje, sem as horas, para uma comparação justa
         data_atual = datetime.now().date()
         data_entrada = datetime.strptime(nova_reserva['data_entrada'], '%Y-%m-%d').date()
         data_saida = datetime.strptime(nova_reserva['data_saida'], '%Y-%m-%d').date()
@@ -206,19 +108,19 @@ def criar_reserva(nova_reserva, database):
         print("Erro de Validação: Formato de data inválido. Use 'YYYY-MM-DD'.")
         return None
     
-    # Validação do CPF (deve ter 11 caracteres e ser composto apenas de dígitos)
+    # Validação do CPF
     cpf = nova_reserva['cpf_cliente']
     if not cpf.isdigit() or len(cpf) != 11:
         print(f"Erro de Validação: CPF '{cpf}' é inválido. Deve conter exatamente 11 dígitos numéricos.")
         return None
 
-    # Validação do Email (deve conter um '@')
+    # Validação do Email
     email = nova_reserva['email']
     if not re.search(r"@[^@]+", email):
         print(f"Erro de Validação: Formato de email '{email}' é inválido.")
         return None
 
-    # Validação do Preço (deve ser um número maior que zero)
+    # Validação do Preço
     try:
         preco = float(nova_reserva['preco_total'])
         if preco <= 0:
@@ -228,39 +130,14 @@ def criar_reserva(nova_reserva, database):
         print("Erro de Validação: O preço total deve ser um número válido.")
         return None
     
-    # Copia o dicionário de entrada para não modificar o original
     reserva_final = database.criar(nova_reserva, 'reservas')
     
     return reserva_final
 
 
-# TODO: TASK 8 - IMPLEMENTAR ATUALIZAR RESERVA
 def atualizar_reserva(dicionario, id, database):
-    """
-    TASK 8 - ATUALIZAR RESERVA (PRIORIDADE: ALTA)
+    """Atualiza uma reserva existente com validações."""
     
-    Atualiza uma reserva existente com validações.
-    
-    CAMPOS ATUALIZÁVEIS:
-    - destino, hotel, tipo_quarto
-    - data_entrada, data_saida (validar datas)
-    - preco_total (deve ser > 0)
-    - nome_cliente, telefone, email
-    - status_pagamento ('pendente', 'pago', 'cancelado')
-    - status_reserva ('confirmada', 'cancelada', 'finalizada')
-    
-    VALIDAÇÕES:
-    - Se alterar datas, validar que entrada >= hoje e saida > entrada
-    - Email deve ter @ se fornecido
-    - Preço deve ser > 0 se fornecido
-    - Não permitir alterar reserva finalizada
-    - CPF não pode ser alterado (regra de negócio)
-    """
-    # TODO: Implementar com validações usando database.atualizar()
-    """
-    Atualiza uma reserva existente com validações.
-    """
-    # Buscar a reserva pelo ID
     # Buscar a reserva pelo ID
     reserva = database.buscar(id, 'reservas', by='id')
     if not reserva:
@@ -273,9 +150,9 @@ def atualizar_reserva(dicionario, id, database):
         return None
 
     # Prevenir alteração de campos proibidos
-    if "cpf" in dicionario:
-        print("O campo 'cpf' não pode ser alterado.")
-        dicionario.pop("cpf")
+    if "cpf_cliente" in dicionario:
+        print("O campo 'cpf_cliente' não pode ser alterado.")
+        dicionario.pop("cpf_cliente")
 
     if "id" in dicionario:
         print("O campo 'id' não pode ser alterado.")
@@ -330,28 +207,12 @@ def atualizar_reserva(dicionario, id, database):
         print("Status de reserva inválido.")
         return None
 
-    # Atualização com base na função do banco de dados
     return database.atualizar(dicionario, 'reservas', id)
 
 
-
-# TODO: TASK 9 - IMPLEMENTAR DELETAR RESERVA
 def deletar_reserva(id, database):
-    """
-    TASK 9 - DELETAR RESERVA (PRIORIDADE: ALTA)
+    """Deleta uma reserva com verificações de segurança."""
     
-    Deleta uma reserva com verificações de segurança.
-    
-    REGRAS DE NEGÓCIO:
-    - Verificar se a reserva existe antes de deletar
-    - Reservas com status 'finalizada' não podem ser deletadas
-    - Reservas 'confirmadas' podem ser deletadas (cancelamento)
-    
-    IMPLEMENTAÇÃO SUGERIDA:
-    - Primeiro buscar a reserva
-    - Verificar se pode ser deletada
-    - Usar database.deletar() para remover
-    """
     reserva = buscar_reserva(id, database, by='id')
     if not reserva:
         print(f"Reserva com ID {id} não encontrada.")
@@ -362,37 +223,11 @@ def deletar_reserva(id, database):
         print("Reservas finalizadas não podem ser deletadas.")
         return None
     
-    # Deletar a reserva usando a função do banco de dados
     return database.deletar('reservas', id)
 
 
-
-# TODO: TASK 10 - IMPLEMENTAR BUSCAR POR FILTROS
 def buscar_por_filtros(lista, **filtros):
-    """
-    TASK 10 - BUSCAR POR FILTROS (PRIORIDADE: MÉDIA)
-    
-    Busca reservas aplicando múltiplos filtros simultaneamente.
-    
-    FILTROS DISPONÍVEIS:
-    - destino: string (busca parcial, case-insensitive)
-    - status_reserva: string exata
-    - status_pagamento: string exata
-    - data_entrada_inicio: reservas a partir desta data
-    - data_entrada_fim: reservas até esta data
-    - nome_cliente: string (busca parcial, case-insensitive)
-    
-    PARÂMETROS:
-    - lista: lista de reservas
-    - **filtros: filtros a serem aplicados
-    
-    RETORNO:
-    - Lista de reservas que atendem a todos os filtros
-    
-    EXEMPLO DE USO:
-    reservas_rio = buscar_por_filtros(lista, destino="Rio", status_pagamento="pago")
-    reservas_pendentes = buscar_por_filtros(lista, status_reserva="confirmada", status_pagamento="pendente")
-    """
+    """Busca reservas aplicando múltiplos filtros simultaneamente."""
     # TODO: Implementar busca com múltiplos filtros
     pass
 

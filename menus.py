@@ -2,421 +2,456 @@ import database
 import functions
 
 
-# TODO: TASK 16 - IMPLEMENTAR MENU PRINCIPAL
 def menu_principal(db):
-    """
-    TASK 16 - MENU PRINCIPAL (PRIORIDADE: ALTA)
-    
-    Exibe o menu principal do sistema de reservas.
-    
-    OPÇÕES DO MENU:
-    1. Listar todas as reservas
-    2. Buscar reserva
-    3. Criar nova reserva
-    4. Atualizar reserva
-    5. Deletar reserva
-    6. Buscar por filtros
-    0. Sair
-    
-    FUNCIONAMENTO:
-    - Exibir menu em loop até usuário escolher sair
-    - Validar entrada do usuário
-    - Chamar função correspondente
-    - Tratar erros de entrada inválida
-    """
+    """Exibe o menu principal do sistema de reservas."""
     print("\n" + "="*50)
     print("       SISTEMA DE GESTÃO DE RESERVAS")
     print("="*50)
     
-    # TODO: Implementar loop do menu principal
     while True:
         print("\n--- MENU PRINCIPAL ---")
-        print("1. Listar reservas")
-        print("2. Criar nova reserva")
-        print("3. Atualizar reserva")
+        print("1. Listar todas as reservas")
+        print("2. Buscar reserva")
+        print("3. Criar nova reserva")
+        print("4. Atualizar reserva")
+        print("5. Deletar reserva")
+        print("6. Buscar por filtros")
         print("0. Sair")
         print("--------------------")
         escolha = input("Escolha uma opção: ")
 
         if escolha == '1':
-            functions.listar_reservas(db.data.get('reservas', []))
+            menu_listar_reservas(db)
         elif escolha == '2':
+            menu_buscar_reserva(db)
+        elif escolha == '3':
             menu_criar_reserva(db)
-        elif escolha == '0':
-            break
-        elif escolha == '3': 
+        elif escolha == '4': 
             menu_atualizar_reserva(db)
+        elif escolha == '5':
+            menu_deletar_reserva(db)
+        elif escolha == '6':
+            menu_buscar_por_filtros(db)
+        elif escolha == '0':
+            print("\nSaindo do sistema...")
+            break
         else:
-            print("Opção inválida!")
+            print("Opção inválida! Tente novamente.")
+
+
+def menu_listar_reservas(db):
+    """Exibe todas as reservas do sistema."""
+    while True:
+        print("\n" + "="*50)
+        print("           TODAS AS RESERVAS")
+        print("="*50)
+        
+        functions.listar_reservas(db)
+        
+        print("\n--- OPÇÕES ---")
+        print("1. Atualizar lista")
+        print("0. Voltar ao menu principal")
+        print("-" * 20)
+        
+        opcao = input("Escolha uma opção: ").strip()
+        
+        if opcao == '1':
+            continue
+        elif opcao == '0':
+            break
+        else:
+            print("Opção inválida! Tente novamente.")
+
+
+def menu_buscar_reserva(db):
+    """Menu para buscar uma reserva específica por ID, nome, CPF ou destino."""
+    while True:
+        print("\n" + "="*50)
+        print("           BUSCAR RESERVA")
+        print("="*50)
+        
+        print("\nEscolha o tipo de busca:")
+        print("1. Buscar por ID")
+        print("2. Buscar por Nome do Cliente")
+        print("3. Buscar por CPF")
+        print("4. Buscar por Destino")
+        print("0. Voltar ao menu principal")
+        print("-" * 20)
+        
+        opcao = input("Opção: ").strip()
+        
+        if opcao == '0':
+            break
+        elif opcao not in ['1', '2', '3', '4']:
+            print("Opção inválida! Tente novamente.")
+            continue
+        
+        # Processar busca baseada na opção escolhida
+        if opcao == '1':
+            try:
+                valor = int(input("Digite o ID da reserva: "))
+                campo = 'id'
+            except ValueError:
+                print("ID deve ser um número!")
+                continue
+        elif opcao == '2':
+            valor = input("Digite o nome do cliente: ").strip()
+            if not valor:
+                print("Nome não pode ser vazio!")
+                continue
+            campo = 'nome_cliente'
+        elif opcao == '3':
+            valor = input("Digite o CPF (apenas números): ").strip()
+            if not valor:
+                print("CPF não pode ser vazio!")
+                continue
+            campo = 'cpf_cliente'
+        elif opcao == '4':
+            valor = input("Digite o destino: ").strip()
+            if not valor:
+                print("Destino não pode ser vazio!")
+                continue
+            campo = 'destino'
+        
+        reserva = functions.buscar_reserva(valor, db, by=campo)
+        
+        if reserva:
+            print("\n" + "="*42)
+            print("RESERVA ENCONTRADA")
+            print("="*42)
+            print(f"ID: {reserva.get('id')}")
+            print(f"Cliente: {reserva.get('nome_cliente')}")
+            cpf = reserva.get('cpf_cliente', '')
+            cpf_formatado = f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}" if len(cpf) == 11 else cpf
+            print(f"CPF: {cpf_formatado}")
+            print(f"Email: {reserva.get('email')}")
+            print(f"Telefone: {reserva.get('telefone')}")
+            print(f"Destino: {reserva.get('destino')}")
+            print(f"Hotel: {reserva.get('hotel')}")
+            print(f"Tipo de Quarto: {reserva.get('tipo_quarto')}")
+            print(f"Check-in: {reserva.get('data_entrada')}")
+            print(f"Check-out: {reserva.get('data_saida')}")
+            print(f"Valor Total: R$ {reserva.get('preco_total', 0):,.2f}")
+            print(f"Status da Reserva: {reserva.get('status_reserva', 'indefinido').capitalize()}")
+            print(f"Status do Pagamento: {reserva.get('status_pagamento', 'indefinido').capitalize()}")
+            print("="*42)
+        else:
+            print(f"\nReserva não encontrada para o {campo}: {valor}")
         
         input("\nPressione Enter para continuar...")
 
 
-# TODO: TASK 17 - IMPLEMENTAR MENU LISTAR
-def menu_listar_reservas(db):
-    """
-    TASK 17 - MENU LISTAR RESERVAS (PRIORIDADE: ALTA)
-    
-    Exibe todas as reservas do sistema.
-    
-    FUNCIONAMENTO:
-    - Acessar lista de reservas do banco de dados
-    - Chamar functions.listar_reservas()
-    - Aguardar usuário pressionar Enter para continuar
-    """
-    print("\n" + "="*50)
-    print("           TODAS AS RESERVAS")
-    print("="*50)
-    
-    # TODO: Implementar listagem usando functions.listar_reservas()
-    pass
-
-
-# TODO: TASK 18 - IMPLEMENTAR MENU BUSCAR
-def menu_buscar_reserva(db):
-    """
-    TASK 18 - MENU BUSCAR RESERVA (PRIORIDADE: ALTA)
-    
-    Permite buscar uma reserva específica.
-    
-    OPÇÕES DE BUSCA:
-    1. Buscar por ID
-    2. Buscar por nome do cliente
-    3. Buscar por CPF
-    4. Buscar por destino
-    
-    FUNCIONAMENTO:
-    - Exibir submenu de opções
-    - Solicitar valor de busca
-    - Usar functions.buscar_reserva()
-    - Exibir resultado ou mensagem de não encontrado
-    """
-    print("\n" + "="*50)
-    print("           BUSCAR RESERVA")
-    print("="*50)
-    print("1. Buscar por ID")
-    print("2. Buscar por Nome do Cliente")
-    print("3. Buscar por CPF")
-    print("4. Buscar por Destino")
-    print("0. Voltar")
-    
-    # TODO: Implementar submenu e busca usando functions.buscar_reserva()
-    pass
-
-
-# TODO: TASK 19 - IMPLEMENTAR MENU CRIAR
 def menu_criar_reserva(db):
-    """
-    TASK 19 - MENU CRIAR RESERVA (PRIORIDADE: ALTA)
-    
-    Coleta dados do usuário e cria uma nova reserva.
-    
-    DADOS A COLETAR:
-    - Destino
-    - Hotel
-    - Tipo de quarto (Standard/Deluxe/Suite)
-    - Data de entrada (formato: DD/MM/AAAA)
-    - Data de saída (formato: DD/MM/AAAA)
-    - Preço total
-    - Nome do cliente
-    - CPF do cliente
-    - Telefone
-    - Email
-    
-    FUNCIONAMENTO:
-    - Solicitar cada campo com input()
-    - Converter datas para formato YYYY-MM-DD
-    - Validar dados básicos
-    - Usar functions.criar_reserva()
-    - Salvar no banco de dados
-    - Exibir confirmação
-    
-    TRATAMENTO DE ERROS:
-    - Capturar erros de validação
-    - Permitir tentar novamente
-    - Exibir mensagens claras de erro
-    """
-    print("\n" + "="*50)
-    print("           CRIAR NOVA RESERVA")
-    print("="*50)
-    
-    # TODO: Implementar coleta de dados e criação usando functions.criar_reserva()
-    dados = {
-        "destino": input("Destino: "),
-        "hotel": input("Hotel: "),
-        "tipo_quarto": input("Tipo de Quarto (Standard, Deluxe, Suite): "),
-        "data_entrada": input("Data de Entrada (AAAA-MM-DD): "),
-        "data_saida": input("Data de Saída (AAAA-MM-DD): "),
-        "nome_cliente": input("Nome do cliente: "),
-        "cpf_cliente": input("CPF do cliente (11 dígitos): "),
-        "telefone": input("Telefone: "),
-        "email": input("Email: ")
-    }
-    try:
-        dados["preco_total"] = float(input("Preço Total: "))
-    except ValueError:
-        print("Erro: Preço inválido.")
-        return
-    
-    reserva_criada = functions.criar_reserva(dados, db.data.get('reservas', []))    
-    
-    if reserva_criada:
-        db.save_data() # Salva o estado atual da lista no arquivo
-        print("\nSUCESSO: Reserva criada e salva no banco de dados.")
-    else:
-        print("\nFALHA: Não foi possível criar a reserva. Verifique os erros.")
-
-
-# TODO: TASK 20 - IMPLEMENTAR MENU ATUALIZAR
-def menu_atualizar_reserva(db):
-    """
-    TASK 20 - MENU ATUALIZAR RESERVA (PRIORIDADE: ALTA)
-    
-    Permite atualizar uma reserva existente.
-    
-    FUNCIONAMENTO:
-    - Solicitar ID da reserva
-    - Buscar e exibir dados atuais
-    - Perguntar quais campos atualizar
-    - Coletar novos valores (Enter = manter atual)
-    - Usar functions.atualizar_reserva()
-    - Salvar no banco de dados
-    - Exibir confirmação
-    
-    CAMPOS ATUALIZÁVEIS:
-    - Destino, Hotel, Tipo de quarto
-    - Datas (entrada e saída)
-    - Preço total
-    - Nome, Telefone, Email
-    - Status da reserva
-    - Status do pagamento
-    """
-    print("\n" + "="*50)
-    print("           ATUALIZAR RESERVA")
-    print("="*50)
-    
-    # TODO: Implementar busca e atualização usando functions.atualizar_reserva()
-    """Interface para o usuário atualizar uma reserva."""
-    try:
-        id_reserva = int(input("Digite o ID da reserva que deseja atualizar: "))
-    except ValueError:
-        print("Erro: ID inválido.")
-        return
-
-    lista_reservas = db.data.get('reservas', [])
-    
-    # Busca a reserva para mostrar os dados atuais e verificar se existe
-    reserva_existente = next((r for r in lista_reservas if r.get("id") == id_reserva), None)
-    if not reserva_existente:
-        print(f"Erro: Reserva com ID {id_reserva} não encontrada.")
-        return
+    """Menu para criar uma nova reserva com validações."""
+    while True:
+        print("\n" + "="*50)
+        print("           CRIAR NOVA RESERVA")
+        print("="*50)
         
-    print(f"\nAtualizando Reserva #{id_reserva}. Pressione Enter para manter o valor atual.")
-    print("-" * 50)
-    
-    dados_para_atualizar = {}
-    
-    # --- DADOS DA VIAGEM ---
-    campos_viagem = ['destino', 'hotel', 'tipo_quarto', 'data_entrada', 'data_saida']
-    for campo in campos_viagem:
-        valor_atual = reserva_existente.get(campo, 'N/A')
-        novo_valor = input(f"{campo.replace('_', ' ').capitalize()} ({valor_atual}): ")
-        if novo_valor:
-            dados_para_atualizar[campo] = novo_valor
-            
-    # --- PREÇO TOTAL (com validação) ---
-    preco_atual = reserva_existente.get('preco_total', 0.0)
-    novo_preco_str = input(f"Preço total ({preco_atual}): ")
-    if novo_preco_str:
+        print("\n--- OPÇÕES ---")
+        print("1. Criar nova reserva")
+        print("0. Voltar ao menu principal")
+        print("-" * 20)
+        
+        opcao = input("Escolha uma opção: ").strip()
+        
+        if opcao == '0':
+            break
+        elif opcao != '1':
+            print("Opção inválida! Tente novamente.")
+            continue
+        
         try:
-            dados_para_atualizar['preco_total'] = float(novo_preco_str)
+            print("\n--- DADOS DO CLIENTE ---")
+            nome_cliente = input("Nome do cliente: ").strip()
+            if not nome_cliente:
+                print("Nome do cliente não pode ser vazio!")
+                continue
+                
+            cpf_cliente = input("CPF (apenas números): ").strip()
+            if not cpf_cliente:
+                print("CPF não pode ser vazio!")
+                continue
+                
+            telefone = input("Telefone: ").strip()
+            email = input("Email: ").strip()
+            
+            print("\n--- DADOS DA RESERVA ---")
+            destino = input("Destino: ").strip()
+            if not destino:
+                print("Destino não pode ser vazio!")
+                continue
+                
+            hotel = input("Hotel: ").strip()
+            if not hotel:
+                print("Hotel não pode ser vazio!")
+                continue
+            
+            print("\nTipos de quarto disponíveis: Standard, Deluxe, Suite")
+            tipo_quarto = input("Tipo de quarto: ").strip()
+            if not tipo_quarto:
+                print("Tipo de quarto não pode ser vazio!")
+                continue
+            
+            print("\n--- DATAS (formato: AAAA-MM-DD) ---")
+            data_entrada = input("Data de entrada: ").strip()
+            if not data_entrada:
+                print("Data de entrada não pode ser vazia!")
+                continue
+                
+            data_saida = input("Data de saída: ").strip()
+            if not data_saida:
+                print("Data de saída não pode ser vazia!")
+                continue
+            
+            preco_input = input("Preço total: R$ ").strip()
+            if not preco_input:
+                print("Preço não pode ser vazio!")
+                continue
+                
+            preco_total = float(preco_input)
+            
+            nova_reserva = {
+                "destino": destino,
+                "hotel": hotel,
+                "tipo_quarto": tipo_quarto,
+                "data_entrada": data_entrada,
+                "data_saida": data_saida,
+                "preco_total": preco_total,
+                "nome_cliente": nome_cliente,
+                "cpf_cliente": cpf_cliente,
+                "telefone": telefone,
+                "email": email
+            }
+            
+            reserva_criada = functions.criar_reserva(nova_reserva, db)
+            
+            if reserva_criada:
+                print(f"\n✓ Reserva criada com sucesso!")
+                print(f"ID da reserva: {reserva_criada.get('id')}")
+                print(f"Cliente: {reserva_criada.get('nome_cliente')}")
+                print(f"Destino: {reserva_criada.get('destino')}")
+            else:
+                print("\n✗ Falha ao criar reserva. Verifique os dados e tente novamente.")
+                
         except ValueError:
-            print(f"Aviso: Formato de preço inválido. O valor do preço não será alterado.")
-
-    print("-" * 50)
-    # --- DADOS DO CLIENTE ---
-    campos_cliente = ['nome_cliente', 'telefone', 'email']
-    for campo in campos_cliente:
-        valor_atual = reserva_existente.get(campo, 'N/A')
-        novo_valor = input(f"{campo.replace('_', ' ').capitalize()} ({valor_atual}): ")
-        if novo_valor:
-            dados_para_atualizar[campo] = novo_valor
-
-    print("-" * 50)
-    # --- STATUS ---
-    campos_status = ['status_reserva', 'status_pagamento']
-    for campo in campos_status:
-        valor_atual = reserva_existente.get(campo, 'N/A')
-        novo_valor = input(f"{campo.replace('_', ' ').capitalize()} ({valor_atual}): ")
-        if novo_valor:
-            dados_para_atualizar[campo] = novo_valor
-
-    if not dados_para_atualizar:
-        print("\nNenhum dado foi alterado.")
-        return
-
-    # Chama a função de alto nível que faz as validações
-    reserva_atualizada = functions.atualizar_reserva(dados_para_atualizar, lista_reservas, id_reserva)
-    
-    if reserva_atualizada:
-        db.save_data() 
-        print("\nSUCESSO: Reserva atualizada.")
-    else:
-        print("\nFALHA: Não foi possível atualizar a reserva. Verifique os erros de validação.")
+            print("\n✗ Erro: Preço deve ser um número válido!")
+        except Exception as e:
+            print(f"\n✗ Erro inesperado: {e}")
+        
+        input("\nPressione Enter para continuar...")
 
 
-# TODO: TASK 21 - IMPLEMENTAR MENU DELETAR
+def menu_atualizar_reserva(db):
+    """Menu para atualizar uma reserva existente."""
+    while True:
+        print("\n" + "="*50)
+        print("           ATUALIZAR RESERVA")
+        print("="*50)
+        
+        print("\n--- OPÇÕES ---")
+        print("1. Atualizar uma reserva")
+        print("0. Voltar ao menu principal")
+        print("-" * 20)
+        
+        opcao = input("Escolha uma opção: ").strip()
+        
+        if opcao == '0':
+            break
+        elif opcao != '1':
+            print("Opção inválida! Tente novamente.")
+            continue
+        
+        try:
+            id_input = input("Digite o ID da reserva a ser atualizada: ").strip()
+            if not id_input:
+                print("ID não pode ser vazio!")
+                continue
+                
+            id_reserva = int(id_input)
+            
+            reserva_atual = functions.buscar_reserva(id_reserva, db, by='id')
+            
+            if not reserva_atual:
+                print(f"Reserva com ID {id_reserva} não encontrada!")
+                input("\nPressione Enter para continuar...")
+                continue
+            
+            print(f"\n--- DADOS ATUAIS DA RESERVA #{id_reserva} ---")
+            print(f"Cliente: {reserva_atual.get('nome_cliente')}")
+            print(f"Destino: {reserva_atual.get('destino')}")
+            print(f"Hotel: {reserva_atual.get('hotel')}")
+            print(f"Status: {reserva_atual.get('status_reserva')}")
+            
+            print(f"\n--- NOVOS DADOS (Enter para manter atual) ---")
+            
+            dados_atualizacao = {}
+            
+            novo_destino = input(f"Destino [{reserva_atual.get('destino')}]: ").strip()
+            if novo_destino:
+                dados_atualizacao['destino'] = novo_destino
+                
+            novo_hotel = input(f"Hotel [{reserva_atual.get('hotel')}]: ").strip()
+            if novo_hotel:
+                dados_atualizacao['hotel'] = novo_hotel
+                
+            novo_tipo_quarto = input(f"Tipo de quarto [{reserva_atual.get('tipo_quarto')}]: ").strip()
+            if novo_tipo_quarto:
+                dados_atualizacao['tipo_quarto'] = novo_tipo_quarto
+                
+            nova_data_entrada = input(f"Data entrada [{reserva_atual.get('data_entrada')}]: ").strip()
+            if nova_data_entrada:
+                dados_atualizacao['data_entrada'] = nova_data_entrada
+                
+            nova_data_saida = input(f"Data saída [{reserva_atual.get('data_saida')}]: ").strip()
+            if nova_data_saida:
+                dados_atualizacao['data_saida'] = nova_data_saida
+                
+            novo_preco = input(f"Preço total [{reserva_atual.get('preco_total')}]: ").strip()
+            if novo_preco:
+                try:
+                    dados_atualizacao['preco_total'] = float(novo_preco)
+                except ValueError:
+                    print("Preço deve ser um número válido!")
+                    input("\nPressione Enter para continuar...")
+                    continue
+                
+            novo_nome = input(f"Nome cliente [{reserva_atual.get('nome_cliente')}]: ").strip()
+            if novo_nome:
+                dados_atualizacao['nome_cliente'] = novo_nome
+                
+            novo_telefone = input(f"Telefone [{reserva_atual.get('telefone')}]: ").strip()
+            if novo_telefone:
+                dados_atualizacao['telefone'] = novo_telefone
+                
+            novo_email = input(f"Email [{reserva_atual.get('email')}]: ").strip()
+            if novo_email:
+                dados_atualizacao['email'] = novo_email
+                
+            print("\nStatus de pagamento: pendente, pago, cancelado")
+            novo_status_pagamento = input(f"Status pagamento [{reserva_atual.get('status_pagamento')}]: ").strip()
+            if novo_status_pagamento:
+                dados_atualizacao['status_pagamento'] = novo_status_pagamento
+                
+            print("Status de reserva: confirmada, cancelada, finalizada")
+            novo_status_reserva = input(f"Status reserva [{reserva_atual.get('status_reserva')}]: ").strip()
+            if novo_status_reserva:
+                dados_atualizacao['status_reserva'] = novo_status_reserva
+            
+            if not dados_atualizacao:
+                print("Nenhum campo foi alterado.")
+                input("\nPressione Enter para continuar...")
+                continue
+                
+            reserva_atualizada = functions.atualizar_reserva(dados_atualizacao, id_reserva, db)
+            
+            if reserva_atualizada:
+                print(f"\n✓ Reserva {id_reserva} atualizada com sucesso!")
+            else:
+                print(f"\n✗ Falha ao atualizar reserva {id_reserva}.")
+                
+        except ValueError:
+            print("\n✗ Erro: ID deve ser um número válido!")
+        except Exception as e:
+            print(f"\n✗ Erro inesperado: {e}")
+        
+        input("\nPressione Enter para continuar...")
+
+
 def menu_deletar_reserva(db):
-    """
-    TASK 21 - MENU DELETAR RESERVA (PRIORIDADE: ALTA)
-    
-    Permite deletar uma reserva do sistema.
-    
-    FUNCIONAMENTO:
-    - Solicitar ID da reserva
-    - Buscar e exibir dados da reserva
-    - Confirmar se realmente deseja deletar
-    - Usar functions.deletar_reserva()
-    - Salvar no banco de dados
-    - Exibir confirmação
-    
-    SEGURANÇA:
-    - Sempre pedir confirmação
-    - Mostrar dados antes de deletar
-    - Permitir cancelar operação
-    - Verificar regras de negócio
-    """
-    print("\n" + "="*50)
-    print("           DELETAR RESERVA")
-    print("="*50)
-    
-    # TODO: Implementar busca, confirmação e deleção usando functions.deletar_reserva()
-    pass
+    """Menu para deletar uma reserva com confirmação."""
+    while True:
+        print("\n" + "="*50)
+        print("           DELETAR RESERVA")
+        print("="*50)
+        
+        print("\n--- OPÇÕES ---")
+        print("1. Deletar uma reserva")
+        print("0. Voltar ao menu principal")
+        print("-" * 20)
+        
+        opcao = input("Escolha uma opção: ").strip()
+        
+        if opcao == '0':
+            break
+        elif opcao != '1':
+            print("Opção inválida! Tente novamente.")
+            continue
+        
+        try:
+            id_input = input("Digite o ID da reserva a ser deletada: ").strip()
+            if not id_input:
+                print("ID não pode ser vazio!")
+                continue
+                
+            id_reserva = int(id_input)
+            
+            reserva = functions.buscar_reserva(id_reserva, db, by='id')
+            
+            if not reserva:
+                print(f"Reserva com ID {id_reserva} não encontrada!")
+                input("\nPressione Enter para continuar...")
+                continue
+            
+            print(f"\n--- DADOS DA RESERVA #{id_reserva} ---")
+            print(f"Cliente: {reserva.get('nome_cliente')}")
+            print(f"Destino: {reserva.get('destino')}")
+            print(f"Hotel: {reserva.get('hotel')}")
+            print(f"Check-in: {reserva.get('data_entrada')}")
+            print(f"Check-out: {reserva.get('data_saida')}")
+            print(f"Status: {reserva.get('status_reserva')}")
+            
+            confirmacao = input(f"\nTem certeza que deseja deletar esta reserva? (s/N): ").strip().lower()
+            
+            if confirmacao == 's' or confirmacao == 'sim':
+                reserva_deletada = functions.deletar_reserva(id_reserva, db)
+                
+                if reserva_deletada:
+                    print(f"\n✓ Reserva {id_reserva} deletada com sucesso!")
+                else:
+                    print(f"\n✗ Falha ao deletar reserva {id_reserva}.")
+            else:
+                print("\nOperação cancelada.")
+                
+        except ValueError:
+            print("\n✗ Erro: ID deve ser um número válido!")
+        except Exception as e:
+            print(f"\n✗ Erro inesperado: {e}")
+        
+        input("\nPressione Enter para continuar...")
 
 
-# TODO: TASK 22 - IMPLEMENTAR MENU FILTROS
 def menu_buscar_por_filtros(db):
-    """
-    TASK 22 - MENU BUSCAR POR FILTROS (PRIORIDADE: MÉDIA)
-    
-    Permite buscar reservas usando múltiplos filtros.
-    
-    FILTROS DISPONÍVEIS:
-    - Destino (busca parcial)
-    - Status da reserva
-    - Status do pagamento
-    - Período de entrada (data início e fim)
-    - Nome do cliente (busca parcial)
-    
-    FUNCIONAMENTO:
-    - Exibir opções de filtros
-    - Coletar valores (Enter = não filtrar)
-    - Usar functions.buscar_por_filtros()
-    - Exibir resultados formatados
-    
-    INTERFACE:
-    - Deixar claro que Enter pula o filtro
-    - Mostrar quantos resultados foram encontrados
-    - Exibir resultados usando listar_reservas()
-    """
-    print("\n" + "="*50)
-    print("           BUSCAR POR FILTROS")
-    print("="*50)
-    print("Deixe em branco (Enter) para não filtrar por esse critério")
-    
-    # TODO: Implementar coleta de filtros e busca usando functions.buscar_por_filtros()
-    pass
+    """Menu para buscar reservas usando múltiplos filtros (em desenvolvimento)."""
+    while True:
+        print("\n" + "="*50)
+        print("           BUSCAR POR FILTROS")
+        print("="*50)
+        
+        print("\n--- OPÇÕES ---")
+        print("1. Buscar por filtros (em desenvolvimento)")
+        print("0. Voltar ao menu principal")
+        print("-" * 20)
+        
+        opcao = input("Escolha uma opção: ").strip()
+        
+        if opcao == '0':
+            break
+        elif opcao == '1':
+            print("\nEsta funcionalidade ainda não foi implementada.")
+            print("Em breve você poderá buscar por:")
+            print("- Destino")
+            print("- Status da reserva")
+            print("- Status do pagamento") 
+            print("- Intervalo de datas")
+            print("- Nome do cliente")
+            input("\nPressione Enter para continuar...")
+        else:
+            print("Opção inválida! Tente novamente.")
 
 
-# TODO: TASK 23 - IMPLEMENTAR FUNÇÕES AUXILIARES DOS MENUS
-def obter_escolha(prompt, opcoes_validas):
-    """
-    TASK 23 - OBTER ESCOLHA (PRIORIDADE: BAIXA)
-    
-    Solicita uma escolha do usuário e valida se está entre as opções válidas.
-    
-    PARÂMETROS:
-    - prompt: mensagem a exibir
-    - opcoes_validas: lista de opções válidas
-    
-    RETORNO:
-    - Opção escolhida (validada)
-    
-    FUNCIONAMENTO:
-    - Loop até entrada válida
-    - Exibir erro para entrada inválida
-    - Permitir opções numéricas e de texto
-    
-    EXEMPLO:
-    escolha = obter_escolha("Escolha uma opção: ", ['1', '2', '3', '0'])
-    """
-    # TODO: Implementar validação de entrada
-    pass
-
-
-def obter_data(prompt):
-    """
-    TASK 24 - OBTER DATA (PRIORIDADE: BAIXA)
-    
-    Solicita uma data do usuário e valida o formato.
-    
-    FORMATO ACEITO: DD/MM/AAAA
-    CONVERSÃO: para YYYY-MM-DD
-    
-    VALIDAÇÕES:
-    - Formato correto
-    - Data válida (não pode ser 30/02, por exemplo)
-    - Data não pode ser no passado (para entrada)
-    
-    RETORNO:
-    - String no formato YYYY-MM-DD
-    
-    TRATAMENTO DE ERROS:
-    - Loop até data válida
-    - Mensagens de erro claras
-    """
-    # TODO: Implementar validação de data
-    pass
-
-
-def confirmar_operacao(mensagem):
-    """
-    TASK 25 - CONFIRMAR OPERAÇÃO (PRIORIDADE: BAIXA)
-    
-    Solicita confirmação do usuário para operações importantes.
-    
-    FUNCIONAMENTO:
-    - Exibir mensagem
-    - Aceitar S/s/Y/y para sim
-    - Aceitar N/n para não
-    - Repetir até entrada válida
-    
-    RETORNO:
-    - True para confirmado
-    - False para cancelado
-    """
-    # TODO: Implementar confirmação
-    pass
-
-
-def pausar():
-    """
-    TASK 26 - PAUSAR (PRIORIDADE: BAIXA)
-    
-    Pausa a execução aguardando o usuário pressionar Enter.
-    Útil para permitir que o usuário leia mensagens antes de continuar.
-    """
-    input("\nPressione Enter para continuar...")
-
-
-def limpar_tela():
-    """
-    TASK 27 - LIMPAR TELA (PRIORIDADE: BAIXA)
-    
-    Limpa a tela do terminal.
-    Funciona em Windows e Linux/Mac.
-    """
-    import os
-    os.system('cls' if os.name == 'nt' else 'clear')
+if __name__ == "__main__":
+    db = database.Database('database.json')
+    menu_principal(db)
 
 
